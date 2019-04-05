@@ -2,7 +2,7 @@ import client from '../config/redisConfig';
 
 
 const blacklistToken = (res, token) => {
-  client.set(token, 'blacklisted', (err, result) => {
+  client.set(token, 'blacklisted', (err) => {
     if (err) {
       return res.status(500).send({
         status: 500,

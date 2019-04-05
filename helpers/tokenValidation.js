@@ -20,7 +20,7 @@ const validateToken = async (req, res, next) => {
   }
   if (token) {
     try {
-      const decoded = await jwt.verify(token, process.env.secretKey);
+      await jwt.verify(token, process.env.secretKey);
       await checkToken(res, token, next);
     } catch (error) {
       return res.status(400).send({
