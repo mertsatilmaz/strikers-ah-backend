@@ -2,6 +2,7 @@ import uuid from 'uuid';
 import select from 'lodash';
 import userModel from '../models/user';
 import helper from '../helpers/helper';
+import blacklist from '../helpers/redis';
 
 /**
  * @param { class } User -- User }
@@ -35,7 +36,7 @@ class User {
         res.status(400).json({ error: 'The username is not available' });
       } else {
         const insertedUser = await userModel.create(newUser);
-        const token = helper.generateToken(select.pick(insertedUser, ['username', 'email', 'firstname', 'lastname']));
+        const token = helper.generateToken(select.pick(insertedUser, ['id']));
         res.header('x-auth-token', token).status(201).json({
           user: {
             username: insertedUser.username,
@@ -48,6 +49,28 @@ class User {
     } catch (error) {
       return res.status(500).json({ error: `${error}` });
     }
+  }
+
+  /**
+   * @author: Clet Mwunguzi
+   * @param {Object} req -- request object
+   * @param {Object} res  -- response object
+   * @returns { Middleware } -- returns nothing
+   */
+  static async logout(req, res) {
+    const token = req.headers['x-access-token'] || req.headers.authorization;
+    await blacklist(res, token);
+  }
+
+
+  /**
+   * @author: Clet Mwunguzi
+   * @param {Object} req -- request object
+   * @param {Object} res  -- response object
+   * @returns { Middleware } -- returns nothing
+   */
+  static welcomeUser(req, res) {
+    return res.status(200).send('Welcome');
   }
 }
 
