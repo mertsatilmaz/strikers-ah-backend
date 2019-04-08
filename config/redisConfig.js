@@ -1,6 +1,8 @@
 import redis from 'redis';
 import dotenv from 'dotenv';
 
+const logger = require('pino')();
+
 dotenv.config();
 
 const client = redis.createClient({
@@ -8,15 +10,15 @@ const client = redis.createClient({
 });
 client.on('connect', (error) => {
   if (error) {
-    console.log(error);
+    logger.error(error);
   }
-  console.log('redis connected successfully');
+  logger.info('redis connected successfully');
 });
 client.on('error', (error, result) => {
   if (error) {
-    return console.log(error);
+    return logger.error(error);
   }
-  console.log(result);
+  logger.info(result);
 });
 
 export default client;
